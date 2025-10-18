@@ -17,7 +17,7 @@ export default function Landing() {
       <nav 
         className={`fixed top-0 w-full flex justify-between items-center px-6 py-4 z-50 transition-all duration-300 ${
           scrolled 
-            ? 'bg-white/70 backdrop-blur-md shadow-md' 
+            ? 'bg-white/50 backdrop-blur-md shadow-md' 
             : 'bg-white shadow-md'
         }`}
       >
@@ -33,7 +33,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <main className="flex flex-col items-center justify-center flex-1 text-center px-4 mt-20">
+      <main className="flex flex-col items-center justify-center flex-1 text-center px-4 mt-40">
         <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-400 text-transparent bg-clip-text">
           Placeholder main text
         </h2>
