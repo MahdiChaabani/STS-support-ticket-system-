@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false);
@@ -23,12 +24,17 @@ export default function Landing() {
       >
         <h1 className="text-lg font-bold text-purple-700">Title</h1>
         <div className="space-x-5">
+          <Link to="/auth">
           <button className="px-4 py-2 text-sm text-white bg-purple-600 rounded hover:bg-purple-700">
             Login
           </button>
+          </Link>
+          <Link to="/auth">
           <button className="px-4 py-2 text-sm text-purple-700 border border-purple-700 rounded hover:bg-purple-100">
             Get Started
           </button>
+          </Link>
+          
         </div>
       </nav>
 
@@ -42,9 +48,11 @@ export default function Landing() {
           ut laboriosam optio excepturi ipsa vitae, nam unde porro voluptatem accusamus
           reprehenderit, quod magnam esse officiis. Esse eaque accusamus aspernatur.
         </p>
+        <Link to="/auth">
         <button className="px-4 py-2 bg-purple-600 text-white text-lg rounded hover:bg-purple-700">
           Get Started
         </button>
+        </Link>
         
         {/* Features Section */}
         <section className="py-16 bg-transparent">
