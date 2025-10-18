@@ -13,7 +13,8 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300">
+    //ROOT
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300"> 
       {/* Navbar */}
       <nav 
         className={`fixed top-0 w-full flex justify-between items-center px-6 py-4 z-50 transition-all duration-300 ${
@@ -71,7 +72,7 @@ export default function Landing() {
 
             {/* Feature 2 */}
             <div className="bg-gray-50 p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
-              <div className="w-10 h-10 flex items-center justify-center bg-cyan-100 text-cyan-600 rounded-lg mb-4">
+              <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-cyan-600 rounded-lg mb-4">
               </div>
               <h3 className="text-lg font-semibold mb-2 text-gray-900">Placeholder</h3>
               <p className="text-gray-600 text-sm">
@@ -82,7 +83,7 @@ export default function Landing() {
 
             {/* Feature 3 */}
             <div className="bg-gray-50 p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
-              <div className="w-10 h-10 flex items-center justify-center bg-green-100 text-green-600 rounded-lg mb-4">
+              <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-green-600 rounded-lg mb-4">
               </div>
               <h3 className="text-lg font-semibold mb-2 text-gray-900">Placeholder</h3>
               <p className="text-gray-600 text-sm">
@@ -95,7 +96,7 @@ export default function Landing() {
 
             {/* Feature 4 */}
             <div className="bg-gray-50 p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
-              <div className="w-10 h-10 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-lg mb-4">
+              <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-yellow-600 rounded-lg mb-4">
               </div>
               <h3 className="text-lg font-semibold mb-2 text-gray-900">Placeholder</h3>
               <p className="text-gray-600 text-sm">
@@ -103,6 +104,26 @@ export default function Landing() {
                 totam odio! Suscipit mollitia officia aliquam labore hic eius. 
                 Asperiores, nisi. Reiciendis nisi eos quibusdam commodi modi beatae.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-10 px-6 bg-purple-400 mb-25 rounded-[2vw]">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-xl md:text-3xl font-bold text-purple-100 mb-6">
+              Ready to Get Started?
+            </h2>
+            <p className="text-lg md:text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos voluptatem accusamus consectetur.
+              Debitis doloremque nesciunt aperiam, eaque temporibus eius! Doloribus pariatur ipsam deserunt, optio mollitia architecto reiciendis tenetur ipsum velit.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="px-8 py-4 bg-white text-purple-600 text-lg font-semibold rounded-lg hover:bg-gray-100 transition shadow-lg">
+                Start Free Trial
+              </button>
+              <button className="px-8 py-4 bg-transparent text-white text-lg font-semibold border-2 border-white rounded-lg hover:bg-white/10 transition">
+                Learn More
+              </button>
             </div>
           </div>
         </section>
