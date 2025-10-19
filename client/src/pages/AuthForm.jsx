@@ -18,27 +18,29 @@ const [isLogin, setIsLogin] = useState(true); //true = login, false = register
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300 scroll-smooth">
       <main className="bg-white/50 backdrop-blur-md shadow-md p-20 rounded-[2vw]">
     <section className="flex w-[30rem] flex-col space-y-10">
-        
-
-    <Link to={"/"}>
-      <svg viewBox="0 0 16 16" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
-        <path 
-            d="M12 8 L4 8" 
-            stroke="#4F46E5" 
-            stroke-width="1.5" 
-            stroke-linecap="round"
-            fill="none"
-            />
+  <div>
+      <Link to={"/"} className="inline-block">
+      <div className="bg-purple-400/20 backdrop-blur-md rounded-lg p-1 hover:bg-purple-300/30 transition-colors">
+        <svg viewBox="0 0 16 16" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
           <path 
-           d="M4 8 L7 5 M4 8 L7 11" 
-           stroke="#4F46E5" 
-           stroke-width="1.5" 
-           stroke-linecap="round" 
-           stroke-linejoin="round"
-           fill="none"
-          />
-      </svg>
-    </Link>  
+              d="M12 8 L4 8" 
+              stroke="#4F46E5" 
+              stroke-width="1.5" 
+              stroke-linecap="round"
+              fill="none"
+              />
+            <path 
+             d="M4 8 L7 5 M4 8 L7 11" 
+             stroke="#4F46E5" 
+             stroke-width="1.5" 
+             stroke-linecap="round" 
+             stroke-linejoin="round"
+             fill="none"
+            />
+        </svg>
+      </div>
+    </Link>
+  </div>
         <h2 class="text-3xl font-medium text-gray font-bold">{isLogin ? "Sign in" : "Sign up"}</h2>
         {!isLogin && (<div class="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
             <input type="text" placeholder="Username"  className="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
