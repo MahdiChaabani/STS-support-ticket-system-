@@ -11,10 +11,10 @@ export default function Landing() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
+  
   return (
     //ROOT
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300"> 
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300 scroll-smooth"> 
       {/* Navbar */}
       <nav 
         className={`fixed top-0 w-full flex justify-between items-center px-6 py-4 z-50 transition-all duration-300 ${
