@@ -1,28 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
 export default function AuthForm() {
-  
 
+const location = useLocation();
+const [isLogin, setIsLogin] = useState(true); //true = login, false = register
+
+  useEffect(() => {
+    if (location.pathname === "/Register") {
+      setIsLogin(false);
+    } else {
+      setIsLogin(true);
+    }
+  }, [location.pathname]);
   return (
     //ROOT
 
-    <div class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300 scroll-smooth">
-      <main class="bg-white/50 backdrop-blur-md shadow-md p-20 rounded-[2vw]">
-    <section class="flex w-[30rem] flex-col space-y-10">
-        <h2 class="text-3xl font-medium text-gray font-bold">Sign in</h2>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300 scroll-smooth">
+      <main className="bg-white/50 backdrop-blur-md shadow-md p-20 rounded-[2vw]">
+    <section className="flex w-[30rem] flex-col space-y-10">
+        
 
-        <div class="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
-            <input type="text" placeholder="Email or Username" class="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
+    <Link to={"/"}>
+      <svg viewBox="0 0 16 16" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <path 
+            d="M12 8 L4 8" 
+            stroke="#4F46E5" 
+            stroke-width="1.5" 
+            stroke-linecap="round"
+            fill="none"
+            />
+          <path 
+           d="M4 8 L7 5 M4 8 L7 11" 
+           stroke="#4F46E5" 
+           stroke-width="1.5" 
+           stroke-linecap="round" 
+           stroke-linejoin="round"
+           fill="none"
+          />
+      </svg>
+    </Link>  
+        <h2 class="text-3xl font-medium text-gray font-bold">{isLogin ? "Sign in" : "Sign up"}</h2>
+        {!isLogin && (<div class="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
+            <input type="text" placeholder="Username"  className="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
+        </div>)}
+        {!isLogin && (<div  className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
+            <input type="text" placeholder="Email"  className="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
+        </div>)}
+        {!isLogin && (<div  className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
+            <input type="text" placeholder="Confirm Email"  className="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
+        </div>)}
+        
+        {isLogin && (<div  className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
+            <input type="text" placeholder="Email or Username"  className="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
+        </div>)}
+
+
+        <div  className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
+            <input type="password" placeholder="Password"  className="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
         </div>
+        {!isLogin && (<div  className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
+            <input type="text" placeholder="Confirm Password"  className="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
+        </div>)}
 
-        <div class="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
-            <input type="password" placeholder="Password" class="w-full border-none bg-transparent outline-none placeholder:  focus:outline-none"/>
-        </div>
-
-        <button class="transform rounded-sm bg-purple-600 py-2 font-bold duration-300 hover:bg-indigo-400 text-white">SIGN IN</button>
+        <button  className="transform rounded-sm bg-purple-600 py-2 font-bold duration-300 hover:bg-indigo-400 text-white">{isLogin ? "SIGN IN" : "SIGN UP"}</button>
         <button type="button"
-                                class="transition-colors focus:ring-2 p-0.5 disabled:cursor-not-allowed bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200 disabled:bg-gray-300 disabled:text-gray-700 rounded-lg ">
+                                 className="transition-colors focus:ring-2 p-0.5 disabled:cursor-not-allowed bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-200 disabled:bg-gray-300 disabled:text-gray-700 rounded-lg ">
                                 <span
-                                    class="flex items-center justify-center gap-1 font-medium py-1 px-2.5 text-base false">
+                                     className="flex items-center justify-center gap-1 font-medium py-1 px-2.5 text-base false">
                                     <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1"
                                         x="0px" y="0px" viewBox="0 0 48 48" enable-background="new 0 0 48 48"
                                         height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
@@ -39,16 +83,21 @@ export default function AuthForm() {
                                             d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571 c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z">
                                         </path>
                                     </svg>
-                                    Sign in with Google
+                                    {isLogin ? "Sign in with Google" : "Sign up with Google"}
                                 </span>
                             </button>
-        <a href="#" class="transform text-center font-semibold text-gray-500 duration-300 hover:text-gray-300">FORGOT PASSWORD?</a>
+        <a href="#"  className="transform text-center text-gray-800 duration-300 hover:text-gray-500">Forgot password?</a>
 
 
-        <p class="text-center text-lg">
-            No account?<span></span>
-            <a href="#" class="font-medium text-indigo-500 underline-offset-4 hover:underline"> Create One</a>
-        </p>
+        <p  className="text-center text-lg">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <Link
+              to={isLogin ? "/Register" : "/Login"}
+              className="font-medium text-indigo-500 underline hover:text-indigo-300"
+            >
+              {isLogin ? "Register" : "Login"}
+            </Link>
+          </p>
     </section>
 </main>
     </div>

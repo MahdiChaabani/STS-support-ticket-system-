@@ -25,12 +25,12 @@ export default function Landing() {
       >
         <h1 className="text-lg font-bold text-purple-700">Title</h1>
         <div className="space-x-5">
-          <Link to="/auth">
+          <Link to="/Login">
           <button className="px-4 py-2 text-sm text-white bg-purple-600 rounded hover:bg-purple-700">
             Login
           </button>
           </Link>
-          <Link to="/auth">
+          <Link to="/Register">
           <button className="px-4 py-2 text-sm text-purple-700 border border-purple-700 rounded hover:bg-purple-100">
             Get Started
           </button>
@@ -49,7 +49,7 @@ export default function Landing() {
           ut laboriosam optio excepturi ipsa vitae, nam unde porro voluptatem accusamus
           reprehenderit, quod magnam esse officiis. Esse eaque accusamus aspernatur.
         </p>
-        <Link to="/auth">
+        <Link to="/Register">
         <button className="px-4 py-2 bg-purple-600 text-white text-lg rounded hover:bg-purple-700">
           Get Started
         </button>
@@ -118,9 +118,11 @@ export default function Landing() {
               Debitis doloremque nesciunt aperiam, eaque temporibus eius! Doloribus pariatur ipsam deserunt, optio mollitia architecto reiciendis tenetur ipsum velit.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/Register">
               <button className="px-8 py-4 bg-white text-purple-600 text-lg font-semibold rounded-lg hover:bg-gray-100 transition shadow-lg">
                 Start Free Trial
               </button>
+              </Link>
               <button className="px-8 py-4 bg-transparent text-white text-lg font-semibold border-2 border-white rounded-lg hover:bg-white/10 transition">
                 Learn More
               </button>
