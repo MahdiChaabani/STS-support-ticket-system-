@@ -1,4 +1,4 @@
-// src/pages/TicketSection.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
