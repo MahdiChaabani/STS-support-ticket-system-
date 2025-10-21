@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
+import { Check, X } from "lucide-react";
 
 export default function AuthForm() {
   const location = useLocation();
-  const [isLogin, setIsLogin] = useState(true); //true = login, false = register
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    confirmEmail: "",
+    emailOrUsername: "",
+    password: "",
+    confirmPassword: ""
+  });
 
   useEffect(() => {
     if (location.pathname === "/Register") {
@@ -13,10 +22,34 @@ export default function AuthForm() {
     }
   }, [location.pathname]);
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const emailsMatch = formData.email && formData.confirmEmail && formData.email === formData.confirmEmail;
+  const emailsDontMatch = formData.confirmEmail && formData.email !== formData.confirmEmail;
+  
+  const passwordsMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
+  const passwordsDontMatch = formData.confirmPassword && formData.password !== formData.confirmPassword;
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle login/register logic here
-    console.log("Form submitted");
+    
+    if (!isLogin) {
+      if (!emailsMatch) {
+        alert("Emails do not match!");
+        return;
+      }
+      if (!passwordsMatch) {
+        alert("Passwords do not match!");
+        return;
+      }
+    }
+    
+    console.log("Form submitted", formData);
   };
 
   return (
@@ -57,7 +90,9 @@ export default function AuthForm() {
                 <input 
                   type="text" 
                   name="username"
-                  placeholder="Username"  
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={handleChange}
                   className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
                 />
               </div>
@@ -68,20 +103,35 @@ export default function AuthForm() {
                 <input 
                   type="email" 
                   name="email"
-                  placeholder="Email"  
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
                 />
               </div>
             )}
 
             {!isLogin && (
-              <div className="w-full transform border-b-2 bg-transparent text-md duration-300 focus-within:border-indigo-500">
-                <input 
-                  type="email" 
-                  name="confirmEmail"
-                  placeholder="Confirm Email"  
-                  className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
-                />
+              <div className="relative">
+                <div className="w-full transform border-b-2 bg-transparent text-md duration-300 focus-within:border-indigo-500 flex items-center">
+                  <input 
+                    type="email" 
+                    name="confirmEmail"
+                    placeholder="Confirm Email"
+                    value={formData.confirmEmail}
+                    onChange={handleChange}
+                    className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
+                  />
+                  {emailsMatch && (
+                    <Check className="text-green-500 w-5 h-5" />
+                  )}
+                  {emailsDontMatch && (
+                    <X className="text-red-500 w-5 h-5" />
+                  )}
+                </div>
+                {emailsDontMatch && (
+                  <p className="text-red-500 text-xs mt-1">Emails do not match</p>
+                )}
               </div>
             )}
             
@@ -90,7 +140,9 @@ export default function AuthForm() {
                 <input 
                   type="text" 
                   name="emailOrUsername"
-                  placeholder="Email or Username"  
+                  placeholder="Email or Username"
+                  value={formData.emailOrUsername}
+                  onChange={handleChange}
                   className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
                 />
               </div>
@@ -100,19 +152,34 @@ export default function AuthForm() {
               <input 
                 type="password" 
                 name="password"
-                placeholder="Password"  
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
                 className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
               />
             </div>
 
             {!isLogin && (
-              <div className="w-full transform border-b-2 bg-transparent text-md duration-300 focus-within:border-indigo-500">
-                <input 
-                  type="password" 
-                  name="confirmPassword"
-                  placeholder="Confirm Password"  
-                  className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
-                />
+              <div className="relative">
+                <div className="w-full transform border-b-2 bg-transparent text-md duration-300 focus-within:border-indigo-500 flex items-center">
+                  <input 
+                    type="password" 
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full font-sans border-none bg-transparent outline-none focus:outline-none"
+                  />
+                  {passwordsMatch && (
+                    <Check className="text-green-500 w-5 h-5" />
+                  )}
+                  {passwordsDontMatch && (
+                    <X className="text-red-500 w-5 h-5" />
+                  )}
+                </div>
+                {passwordsDontMatch && (
+                  <p className="text-red-500 text-xs mt-1">Passwords do not match</p>
+                )}
               </div>
             )}
 
