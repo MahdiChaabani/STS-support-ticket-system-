@@ -1,8 +1,8 @@
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { useEffect, useRef } from 'react';
-import Landing from "./components/Landing";
-import AuthForm from "./components/AuthForm";
+import Landing from "./Pages/Landing";
+import AuthForm from "./Pages/AuthForm";
 import Lenis from 'lenis';
 
 function App() {
