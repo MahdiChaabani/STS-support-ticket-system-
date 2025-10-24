@@ -35,10 +35,30 @@ export default function AuthForm() {
   const passwordsMatch = formData.password && formData.confirmPassword && formData.password === formData.confirmPassword;
   const passwordsDontMatch = formData.confirmPassword && formData.password !== formData.confirmPassword;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!isLogin) {
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    if (isLogin) {
+      // LOGIN request
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          emailOrUsername: formData.emailOrUsername,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message);
+      } else {
+        alert(data.message);
+      }
+    } else {
+      // REGISTER request (not yet implemented on backend)
       if (!emailsMatch) {
         alert("Emails do not match!");
         return;
@@ -47,10 +67,31 @@ export default function AuthForm() {
         alert("Passwords do not match!");
         return;
       }
+
+      const res = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message);
+      } else {
+        alert(data.message);
+      }
     }
-    
-    console.log("Form submitted", formData);
-  };
+  } catch (err) {
+    console.error("Error connecting to server:", err);
+    alert("Server error. Make sure the backend is running!");
+  }
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-purple-100 to-purple-300 scroll-smooth">
