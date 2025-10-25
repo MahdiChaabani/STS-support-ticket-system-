@@ -9,7 +9,7 @@ export default function AuthForm() {
     username: "",
     email: "",
     confirmEmail: "",
-    emailOrUsername: "",
+    emailOrUsername: "", // Used for login
     password: "",
     confirmPassword: ""
   });
