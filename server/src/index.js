@@ -1,30 +1,32 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
 dotenv.config();
-const app = express();
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+const app = express();
+app.use(cors());
 app.use(express.json());
 
-// Temporary in-memory "user"
-const dummyUser = {
-  emailOrUsername: "test@example.com",
-  password: "123456",
-};
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Backend is running!");
+  res.json({ message: "Server is running and connected to MongoDB!" });
 });
 
-// Login route
+// Example login route (dummy for now)
 app.post("/api/login", (req, res) => {
   const { emailOrUsername, password } = req.body;
 
-  if (emailOrUsername === dummyUser.emailOrUsername && password === dummyUser.password) {
-    return res.json({ message: "Login successful", user: { emailOrUsername } });
+  // Example: Replace this with MongoDB user lookup later
+  if (emailOrUsername === "test@example.com" && password === "123456") {
+    return res.json({ message: "Login successful" });
   }
 
   res.status(401).json({ message: "Invalid credentials" });
