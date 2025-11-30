@@ -5,7 +5,9 @@ import MainLayout from "./layout/MainLayout.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import TicketSection from "./pages/TicketSection.jsx";
 import ProfileSection from "./pages/ProfileSection.jsx";
-import UsersAgentsPage from "./pages/UsersAgentsPage.jsx"; // <-- Import the new page
+import UsersAgentsPage from "./pages/UsersAgentsPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
+
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="tickets" element={<TicketSection />} />
         <Route path="profile" element={<ProfileSection />} />
         <Route path="users" element={<UsersAgentsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
+
         {/* <-- Add this route */}
       </Route>
     </Routes>
