@@ -150,8 +150,6 @@ const ProfileSection = () => {
           >
             {[
               { id: "profile", label: "Profile" },
-              { id: "team", label: "Team" },
-              { id: "integrations", label: "Integrations" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -310,87 +308,6 @@ const ProfileSection = () => {
             </div>
           )}
 
-          {activeTab === "team" && (
-            <div className={`rounded-2xl border ${surface} p-6`}>
-              <div className="flex justify-between items-center mb-6">
-                <h3 className={`font-semibold text-lg ${textPrimary}`}>
-                  Team Members (3)
-                </h3>
-                <button className="text-sm bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                  Invite
-                </button>
-              </div>
-              <div className="space-y-4">
-                {[
-                  {
-                    name: "Mahdi Chaabani",
-                    email: "admin@sts.com",
-                    role: "Admin",
-                    status: "active",
-                  },
-                  {
-                    name: "Sarah Johnson",
-                    email: "sarah@sts.com",
-                    role: "Agent",
-                    status: "active",
-                  },
-                  {
-                    name: "Alex Chen",
-                    email: "alex@sts.com",
-                    role: "Agent",
-                    status: "pending",
-                  },
-                ].map((user, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-4 rounded-lg bg-slate-800/10 dark:bg-slate-700/20"
-                  >
-                    <div>
-                      <p className={`font-medium ${textPrimary}`}>
-                        {user.name}
-                      </p>
-                      <p className={`text-sm ${textMuted}`}>
-                        {user.email} • {user.role}
-                      </p>
-                    </div>
-                    <span
-                      className={`text-xs px-2.5 py-0.5 rounded-full ${
-                        user.status === "active"
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-yellow-500/20 text-yellow-400"
-                      }`}
-                    >
-                      {user.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "integrations" && (
-            <div className={`rounded-2xl border ${surface} p-6`}>
-              <h3 className={`font-semibold text-lg mb-6 ${textPrimary}`}>
-                Connected Apps
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {["Slack", "Jira", "Zendesk", "Discord"].map((app) => (
-                  <div
-                    key={app}
-                    className="flex items-center gap-3 p-4 rounded-lg border border-slate-700/30 dark:border-slate-600/30"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
-                      {app[0]}
-                    </div>
-                    <span className={textPrimary}>{app}</span>
-                    <span className="ml-auto text-green-500 text-sm font-medium">
-                      Connected
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
