@@ -10,41 +10,29 @@ import TicketSection from "./pages/admin/TicketSection.jsx";
 import ProfileSection from "./pages/admin/ProfileSection.jsx";
 
 function App() {
-const lenis = useRef(null);
-
-useEffect(() => {
-// Only initialize Lenis for public pages
-const pathname = window.location.pathname;
-if (!pathname.startsWith("/admin")) {
-lenis.current = new Lenis({
-duration: 0.6,
-easing: (t) => 1 - Math.pow(1 - t, 3),
-smooth: true,
-smoothTouch: true,
-});
-
-
-  const animate = (time) => {
-    lenis.current.raf(time);
+  const lenis = useRef(null);
+  useEffect(() => {
+    // Initialize Lenis
+    lenis.current = new Lenis({
+      duration: 0.6, // Control the duration of the scroll
+      easing: (t) => 1 - Math.pow(1 - t, 3), // Cubic easing for smooth stop
+      smooth: true,
+      smoothTouch: true, // Enable smooth scrolling on touch devices
+    });
+    const animate = (time) => {
+      lenis.current.raf(time);
+      requestAnimationFrame(animate);
+    };
     requestAnimationFrame(animate);
+    // Cleanup on unmount
+    return () => {
+      lenis.current.destroy();
+    };
+  }, []);
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    lenis.current.scrollTo(element);
   };
-
-  requestAnimationFrame(animate);
-
-  return () => {
-    lenis.current.destroy();
-  };
-}
-
-
-}, []);
-
-const scrollToSection = (id) => {
-if (lenis.current) {
-const element = document.getElementById(id);
-lenis.current.scrollTo(element);
-}
-};
 
 return (
 <Routes>
