@@ -30,7 +30,7 @@ function App() {
     };
   }, []);
 
-  const scrollToSection = (id) => {
+  const _scrollToSection = (id) => {
     const element = document.getElementById(id);
     lenis.current.scrollTo(element);
   };
