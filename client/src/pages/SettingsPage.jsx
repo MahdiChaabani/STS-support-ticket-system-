@@ -45,7 +45,6 @@ const SettingsPage = () => {
   const tabs = [
     { id: "general", label: "General" },
     { id: "notifications", label: "Notifications" },
-    { id: "integrations", label: "Integrations" },
   ];
 
   return (
@@ -122,63 +121,7 @@ const SettingsPage = () => {
               </div>
             </div>
 
-            <div className={`rounded-xl border ${borderClass} ${bgCard} p-6`}>
-              <h2 className={`text-lg font-semibold ${textPrimary} mb-4`}>
-                System Preferences
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-1 ${textSecondary}`}
-                  >
-                    Default Ticket Priority
-                  </label>
-                  <select
-                    className={`w-full px-4 py-2.5 rounded-lg border ${borderClass} ${bgInput} ${textPrimary} focus:outline-none ${focusRing}`}
-                  >
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option selected>High</option>
-                  </select>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className={`font-medium ${textPrimary}`}>
-                    Auto-Assign Tickets
-                  </span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="autoAssign"
-                      checked={settings.autoAssign}
-                      onChange={handleInputChange}
-                      className="sr-only peer"
-                    />
-                    <div
-                      className={`w-11 h-6 rounded-full peer ${
-                        isDark
-                          ? "bg-slate-700 peer-checked:bg-purple-600"
-                          : "bg-slate-200 peer-checked:bg-purple-600"
-                      } peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all`}
-                    ></div>
-                  </label>
-                </div>
-                <div>
-                  <label
-                    className={`block text-sm font-medium mb-1 ${textSecondary}`}
-                  >
-                    Ticket SLA Hours
-                  </label>
-                  <input
-                    name="slaHours"
-                    type="number"
-                    min="1"
-                    value={settings.slaHours}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-2.5 rounded-lg border ${borderClass} ${bgInput} ${textPrimary} placeholder:${textMuted} focus:outline-none ${focusRing}`}
-                  />
-                </div>
-              </div>
-            </div>
+           
 
             <div className="flex gap-3">
               <button
@@ -250,78 +193,7 @@ const SettingsPage = () => {
           </div>
         )}
 
-        {/* 🔌 Integrations */}
-        {activeTab === "integrations" && (
-          <div className="space-y-6">
-            <div className={`rounded-xl border ${borderClass} ${bgCard} p-6`}>
-              <h2 className={`text-lg font-semibold ${textPrimary} mb-4`}>
-                Slack Integration
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <span className={`font-medium ${textPrimary}`}>Status:</span>{" "}
-                  <span
-                    className={`ml-2 ${
-                      settings.slackConnected
-                        ? "text-green-500"
-                        : "text-red-400"
-                    }`}
-                  >
-                    {settings.slackConnected ? "✓ Connected" : "✗ Disconnected"}
-                  </span>
-                </div>
-                <div>
-                  <span className={`font-medium ${textPrimary}`}>Channel:</span>{" "}
-                  <span className="ml-2 font-mono">#support-tickets</span>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                      isDark
-                        ? "bg-slate-700 text-slate-200"
-                        : "bg-slate-100 text-slate-800"
-                    } ${hoverBg}`}
-                  >
-                    Reconnect
-                  </button>
-                  <button
-                    className={`px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600`}
-                  >
-                    Disconnect
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className={`rounded-xl border ${borderClass} ${bgCard} p-6`}>
-              <h2 className={`text-lg font-semibold ${textPrimary} mb-4`}>
-                Webhook URL
-              </h2>
-              <div className="flex gap-2">
-                <input
-                  readOnly
-                  value={settings.webhookUrl}
-                  className={`flex-1 px-4 py-2.5 rounded-lg border ${borderClass} ${bgInput} ${textPrimary} font-mono focus:outline-none`}
-                />
-                <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(settings.webhookUrl)
-                  }
-                  className={`px-4 py-2.5 rounded-lg text-sm font-medium ${
-                    isDark
-                      ? "bg-slate-700 text-slate-200"
-                      : "bg-slate-100 text-slate-800"
-                  } ${hoverBg}`}
-                >
-                  Copy
-                </button>
-                <button className="px-4 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700">
-                  Regenerate
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        
       </div>
     </div>
   );

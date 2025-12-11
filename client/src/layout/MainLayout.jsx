@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 const MainLayout = () => {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("dark"); 
   const [activeNav, setActiveNav] = useState("dashboard");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
