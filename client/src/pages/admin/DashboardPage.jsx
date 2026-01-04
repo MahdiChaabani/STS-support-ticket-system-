@@ -138,7 +138,7 @@ const DashboardPage = () => {
             getStatusBadge={getStatusBadge} 
             getPriorityBadge={getPriorityBadge} 
             renderIcon={renderIcon} 
-            onClick={() => navigate('/tickets')}
+            onClick={() => navigate('/admin/tickets')}
           />
         ))}
       </div>

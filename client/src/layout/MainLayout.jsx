@@ -68,7 +68,7 @@ const MainLayout = () => {
 
   const handleNavClick = (id) => {
     if (id === 'tickets') {
-      navigate('/tickets');
+      navigate('/admin/tickets');
       setActiveNav('tickets');
     } else if (id === 'dashboard') {
       navigate('/');
