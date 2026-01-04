@@ -23,6 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+
+
+application.properties
+
 # Dotenv
 
 .env

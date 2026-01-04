@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Check, X } from "lucide-react";
+
+// Mock users database
+const MOCK_USERS = [
+  { id: 1, username: 'admin', email: 'admin@sts.com', password: 'password123', role: 'admin' },
+  { id: 2, username: 'user', email: 'user@example.com', password: 'userpass', role: 'user' }
+];
 
 export default function AuthForm() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     username: "",
@@ -13,6 +20,7 @@ export default function AuthForm() {
     password: "",
     confirmPassword: ""
   });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (location.pathname === "/Register") {
@@ -36,61 +44,46 @@ export default function AuthForm() {
   const passwordsDontMatch = formData.confirmPassword && formData.password !== formData.confirmPassword;
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setError('');
 
-  try {
     if (isLogin) {
-      // LOGIN request
-      const res = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          emailOrUsername: formData.emailOrUsername,
-          password: formData.password,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(data.message);
-      } else {
-        alert(data.message);
-      }
-    } else {
-      // REGISTER request (not yet implemented on backend)
-      if (!emailsMatch) {
-        alert("Emails do not match!");
-        return;
-      }
-      if (!passwordsMatch) {
-        alert("Passwords do not match!");
+      const identifier = formData.emailOrUsername.trim();
+      const pwd = formData.password;
+      if (!identifier || !pwd) {
+        setError('Please provide username/email and password.');
         return;
       }
 
-      const res = await fetch("http://localhost:5000/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(data.message);
-      } else {
-        alert(data.message);
+      // simple mock auth: search MOCK_USERS by username or email
+      const user = MOCK_USERS.find(u => u.username === identifier || u.email === identifier);
+      if (!user || user.password !== pwd) {
+        setError('Invalid credentials. Try admin / password123 or user / userpass.');
+        return;
       }
+
+      // on success navigate to dashboard (admin area)
+      navigate('/admin');
+      return;
     }
-  } catch (err) {
-    console.error("Error connecting to server:", err);
-    alert("Server error. Make sure the backend is running!");
-  }
-};
+
+    // Register flow (mock): basic checks
+    if (!formData.username || !formData.email || !formData.password) {
+      setError('Please complete all required fields.');
+      return;
+    }
+    if (emailsDontMatch) {
+      setError('Emails do not match.');
+      return;
+    }
+    if (passwordsDontMatch) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    // pretend to create a user and navigate to dashboard
+    navigate('/admin');
+  };
 
 
   return (
