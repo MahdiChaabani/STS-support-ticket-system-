@@ -1,0 +1,9 @@
+build/
+.gradle/
+node_modules/
+.git/
+*.log
+**/tmp/
+**/out/
+Dockerfile
+docker-compose.yml
