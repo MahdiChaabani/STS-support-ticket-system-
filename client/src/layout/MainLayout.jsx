@@ -10,13 +10,48 @@ const MainLayout = () => {
   const [notifications, setNotifications] = useState([]);
   const dropdownRef = useRef(null);
 
+  
+  // get current user to determine base route and display info
+  const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
-    setNotifications([
-      { id: 1, type: 'ticket', title: 'New ticket assigned', message: 'TK-1045 has been assigned to you', time: '5 min ago', read: false },
-      { id: 2, type: 'reply', title: 'New reply on TK-1042', message: 'Vasso Bert replied to your ticket', time: '1 hour ago', read: false },
-      { id: 3, type: 'resolved', title: 'Ticket resolved', message: 'TK-1038 has been marked as resolved', time: '3 hours ago', read: true }
-    ]);
+    try {
+      const s = localStorage.getItem('user');
+      if (s) setCurrentUser(JSON.parse(s));
+    } catch (e) { /* ignore */ }
   }, []);
+
+  // build notifications based on tickets and current user role
+  useEffect(() => {
+    const API = 'http://localhost:8082/api';
+    let mounted = true;
+    const stored = localStorage.getItem('user');
+    const user = stored ? JSON.parse(stored) : null;
+    fetch(`${API}/tickets`).then(r => r.ok ? r.json() : Promise.reject()).then(data => {
+      if (!mounted) return;
+      const notifs = [];
+      if (user && user.role === 'admin') {
+        // admin: notify about new/open tickets
+        data.forEach(t => {
+          if (t.status === 'open') {
+            notifs.push({ id: `ticket-${t.id}`, type: 'ticket', title: `New ticket ${t.id}`, message: t.title, time: t.time || 'Just now', read: false });
+          }
+        });
+      } else if (user) {
+        // regular user: notify about updates to their tickets
+        data.forEach(t => {
+          if (t.requester === user.email || t.requester === user.username) {
+            if (t.status && t.status !== 'open') {
+              notifs.push({ id: `update-${t.id}`, type: 'resolved', title: `Ticket ${t.id} updated`, message: `${t.title} is ${t.status}`, time: t.time || 'Just now', read: false });
+            }
+          }
+        });
+      }
+      setNotifications(notifs);
+    }).catch(() => {
+      setNotifications([]);
+    });
+    return () => { mounted = false };
+  }, [currentUser]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -65,14 +100,7 @@ const MainLayout = () => {
     { id: 'messages', label: 'Messages', icon: 'message' }
   ];
 
-  // get current user to determine base route and display info
-  const [currentUser, setCurrentUser] = useState(null);
-  useEffect(() => {
-    try {
-      const s = localStorage.getItem('user');
-      if (s) setCurrentUser(JSON.parse(s));
-    } catch (e) { /* ignore */ }
-  }, []);
+  
 
   const handleNavClick = (id) => {
     const base = (currentUser && currentUser.role === 'admin') ? 'admin' : 'user';
@@ -92,6 +120,12 @@ const MainLayout = () => {
     } else {
       setActiveNav(id);
     }
+  };
+
+  const handleLogout = () => {
+    try { localStorage.removeItem('user'); } catch (e) {}
+    setCurrentUser(null);
+    navigate('/');
   };
 
   return (
@@ -144,7 +178,7 @@ const MainLayout = () => {
                 <p className={`text-xs truncate ${textSecondary}`}>{currentUser?.email || '—'}</p>
               </div>
             </div>
-            <button className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg border font-medium text-sm ${isDark ? 'border-slate-700 text-slate-300 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400' : 'border-slate-300 text-slate-600 hover:bg-red-100/50 hover:border-red-300 hover:text-red-600'}`}>
+            <button onClick={handleLogout} className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg border font-medium text-sm ${isDark ? 'border-slate-700 text-slate-300 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400' : 'border-slate-300 text-slate-600 hover:bg-red-100/50 hover:border-red-300 hover:text-red-600'}`}>
               {renderIcon('logout', 'w-4 h-4')}
               Logout
             </button>

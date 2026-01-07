@@ -56,6 +56,12 @@ const DashboardPage = () => {
   ];
 
   const filteredTickets = tickets.filter(ticket => {
+    const stored = localStorage.getItem('user');
+    const user = stored ? JSON.parse(stored) : null;
+    // non-admins only see their own tickets
+    if (user && user.role !== 'admin') {
+      if (!(ticket.requester === user.email || ticket.requester === user.username || ticket.assignee === user.name)) return false;
+    }
     const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || ticket.priority === priorityFilter;
     return matchesStatus && matchesPriority;
@@ -179,7 +185,7 @@ const DashboardPage = () => {
             getStatusBadge={getStatusBadge} 
             getPriorityBadge={getPriorityBadge} 
             renderIcon={renderIcon} 
-            onClick={() => navigate('/admin/tickets')}
+            onClick={() => navigate((currentUser && currentUser.role === 'admin') ? '/admin/tickets' : '/user/tickets')}
           />
         ))}
       </div>

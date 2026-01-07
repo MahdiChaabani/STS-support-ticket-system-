@@ -18,16 +18,41 @@ const ProfileSection = () => {
   // State
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: 'Mahdi Chaabani',
-    email: 'admin@sts.com',
-    role: 'Administrator',
-    department: 'Support Engineering',
-    location: 'Tunis, Tunisia',
-    bio: 'Building scalable support systems for enterprise clients.',
-    avatar: 'MC'
+    name: '',
+    email: '',
+    role: '',
+    department: '',
+    location: '',
+    bio: '',
+    avatar: ''
   });
 
   const [formData, setFormData] = useState({ ...profile });
+
+  // initialize profile from logged-in user in localStorage
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem('user');
+      if (!s) return;
+      const u = JSON.parse(s);
+      const name = u.name || u.username || (u.email ? u.email.split('@')[0] : 'User');
+      const avatar = u.avatar || name.split(' ').map(n => n[0]).join('').toUpperCase();
+      const roleLabel = u.role === 'admin' ? 'Administrator' : (u.role ? u.role : 'User');
+      const profileObj = {
+        name,
+        email: u.email || '',
+        role: roleLabel,
+        department: u.department || '',
+        location: u.location || '',
+        bio: u.bio || '',
+        avatar
+      };
+      setProfile(profileObj);
+      setFormData({ ...profileObj });
+    } catch (e) {
+      // ignore parse errors
+    }
+  }, []);
   const [notifications, setNotifications] = useState({
     email: true,
     tickets: true,

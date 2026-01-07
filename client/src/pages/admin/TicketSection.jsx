@@ -189,12 +189,10 @@ const TicketSection = () => {
     setAttachedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  // === Mock Conversation ===
-  const conversation = [
-    { id: 1, author: 'Sarah Johnson', role: 'customer', time: 'Oct 17, 9:30 AM', message: selectedTicket?.description || '' },
-    { id: 2, author: 'Mike Chen', role: 'agent', time: 'Staff • Oct 17, 9:45 AM', message: 'Hi Sarah, I\'m sorry to hear you\'re having trouble logging in. Let me look into this for you. Could you please provide more details about the error message you\'re seeing?' },
-    { id: 3, author: 'Sarah Johnson', role: 'customer', time: 'Oct 17, 10:15 AM', message: 'Thanks for the quick response! I\'m getting an \'OAuth authentication failed\' error when trying to log in with Google. It was working fine yesterday.' }
-  ];
+  // Conversation: show ticket description as initial message (no mock replies)
+  const conversation = selectedTicket ? [
+    { id: 1, author: selectedTicket.requester || selectedTicket.assignee || 'User', role: 'customer', time: selectedTicket.time || '', message: selectedTicket.description || '' }
+  ] : [];
 
   return (
     <div className="flex flex-col h-full">
