@@ -32,6 +32,11 @@ public class AuthController {
         if (user.getEmail() == null || user.getPassword() == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "email and password required"));
         }
+        // default role to 'user' when not provided
+        if (user.getRole() == null || user.getRole().isBlank()) {
+            user.setRole("user");
+        }
+
         if (userRepo.existsByEmail(user.getEmail()) || (user.getUsername() != null && userRepo.existsByUsername(user.getUsername()))) {
             return ResponseEntity.status(409).body(Map.of("error", "User already exists"));
         }

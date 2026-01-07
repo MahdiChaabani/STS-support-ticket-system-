@@ -27,20 +27,27 @@ const TicketSection = () => {
   const conversationEndRef = useRef(null);
 
   // === Mock Data ===
-  const initialTickets = [
-    { id: 'TK-1042', category: 'TECHNICAL', title: 'Login Authentication Issue', description: 'Unable to authenticate using OAuth provider...', status: 'in-progress', priority: 'high', time: '2 hours ago', replies: 3, assignee: 'Vasso Bert' },
-    { id: 'TK-1041', category: 'BILLING', title: 'Payment Method Update', description: 'Need assistance updating payment method...', status: 'open', priority: 'medium', time: '5 hours ago', replies: 1, assignee: 'Mohamed Ali' },
-    { id: 'TK-1038', category: 'FEATURE REQUEST', title: 'Dark Mode for Mobile App', description: 'Request to implement dark mode...', status: 'in-progress', priority: 'low', time: '1 day ago', replies: 5, assignee: 'Donald Akeem' },
-    { id: 'TK-1035', category: 'BUG REPORT', title: 'Dashboard Data Not Loading', description: 'Dashboard analytics widgets are showing empty state...', status: 'resolved', priority: 'high', time: '3 days ago', replies: 8, assignee: 'Mahdi Chaabani' },
-    { id: 'TK-1033', category: 'TECHNICAL', title: 'API Rate Limit Issues', description: 'Experiencing frequent rate limit errors...', status: 'open', priority: 'high', time: '4 days ago', replies: 2, assignee: 'Sarah Johnson' },
-    { id: 'TK-1030', category: 'FEATURE REQUEST', title: 'Export Data Feature', description: 'Add ability to export user data...', status: 'in-progress', priority: 'medium', time: '5 days ago', replies: 7, assignee: 'Alex Chen' }
-  ];
+  // no mock data: rely on backend for tickets
+  const initialTickets = [];
 
   useEffect(() => {
-    setTickets(initialTickets);
-    if (initialTickets.length > 0) {
-      setSelectedTicket(initialTickets[0]);
-    }
+    const API = 'http://localhost:8082/api';
+    let mounted = true;
+    fetch(`${API}/tickets`).then(r => {
+      if (!r.ok) throw new Error('no tickets');
+      return r.json();
+    }).then(data => {
+      if (!mounted) return;
+      if (Array.isArray(data)) {
+        setTickets(data);
+        if (data.length > 0) setSelectedTicket(data[0]);
+        return;
+      }
+      setTickets([]);
+    }).catch(() => {
+      setTickets([]);
+    });
+    return () => { mounted = false };
   }, []);
 
   // === Theme Classes ===
@@ -88,6 +95,12 @@ const TicketSection = () => {
 
   // === Filters ===
   const filteredTickets = tickets.filter(ticket => {
+    const stored = localStorage.getItem('user');
+    const user = stored ? JSON.parse(stored) : null;
+    // if user is not admin, show only their tickets
+    if (user && user.role !== 'admin') {
+      if (!(ticket.requester === user.email || ticket.requester === user.username || ticket.assignee === user.name)) return false;
+    }
     const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || ticket.priority === priorityFilter;
     const matchesSearch = 
@@ -102,19 +115,44 @@ const TicketSection = () => {
     e.preventDefault();
     if (!newTicketForm.title.trim() || !newTicketForm.description.trim()) return;
 
-    const newTicket = {
-      id: `TK-${1045 + tickets.length}`,
-      ...newTicketForm,
+    const API = 'http://localhost:8082/api';
+    const stored = localStorage.getItem('user');
+    const user = stored ? JSON.parse(stored) : null;
+    const payload = {
+      category: newTicketForm.category,
+      title: newTicketForm.title,
+      description: newTicketForm.description,
+      priority: newTicketForm.priority,
       status: 'open',
-      time: 'Just now',
-      replies: 0,
-      assignee: 'Mahdi Chaabani'
+      assignee: 'Mahdi Chaabani',
+      requester: user?.email || user?.username || 'anonymous'
     };
-
-    setTickets([newTicket, ...tickets]);
-    setNewTicketForm({ title: '', description: '', category: 'TECHNICAL', priority: 'medium' });
-    setShowCreateTicket(false);
-    setSelectedTicket(newTicket);
+    fetch(`${API}/tickets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(async r => {
+      if (!r.ok) throw new Error('create failed');
+      const created = await r.json();
+      setTickets(prev => [created, ...prev]);
+      setNewTicketForm({ title: '', description: '', category: 'TECHNICAL', priority: 'medium' });
+      setShowCreateTicket(false);
+      setSelectedTicket(created);
+    }).catch(() => {
+      // fallback to client-only create
+      const newTicket = {
+        id: `TK-${1045 + tickets.length}`,
+        ...newTicketForm,
+        status: 'open',
+        time: 'Just now',
+        replies: 0,
+        assignee: 'Mahdi Chaabani'
+      };
+      setTickets([newTicket, ...tickets]);
+      setNewTicketForm({ title: '', description: '', category: 'TECHNICAL', priority: 'medium' });
+      setShowCreateTicket(false);
+      setSelectedTicket(newTicket);
+    });
   };
 
   const handleSendReply = () => {

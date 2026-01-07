@@ -16,25 +16,43 @@ const DashboardPage = () => {
   });
   const [showCreateTicket, setShowCreateTicket] = useState(false);
 
-  const initialTickets = [
-    { id: 'TK-1035', category: 'BUG REPORT', title: 'Dashboard Data Not Loading', description: 'Dashboard analytics widgets are showing empty state...', status: 'resolved', priority: 'high', time: '3 days ago', replies: 8, assignee: 'Mahdi Chaabani' },
-    { id: 'TK-1033', category: 'TECHNICAL', title: 'API Rate Limit Issues', description: 'Experiencing frequent rate limit errors...', status: 'open', priority: 'high', time: '4 days ago', replies: 2, assignee: 'Sarah Johnson' },
-    { id: 'TK-1030', category: 'FEATURE REQUEST', title: 'Export Data Feature', description: 'Add ability to export user data...', status: 'in-progress', priority: 'medium', time: '5 days ago', replies: 7, assignee: 'Alex Chen' }
-  ];
+  // no mock data; load from backend
+  const initialTickets = [];
 
   useEffect(() => {
-    setTickets(initialTickets);
+    const API = 'http://localhost:8082/api';
+    let mounted = true;
+    fetch(`${API}/tickets`).then(r => r.ok ? r.json() : Promise.reject()).then(data => {
+      if (!mounted) return;
+      if (Array.isArray(data)) {
+        setTickets(data);
+        return;
+      }
+      setTickets([]);
+    }).catch(() => {
+      setTickets([]);
+    });
+    return () => { mounted = false };
   }, []);
 
   const isDark = theme === 'dark';
   const textPrimary = isDark ? 'text-white' : 'text-gray-900';
   const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
 
+  // determine user role from localStorage
+  const [currentUser, setCurrentUser] = React.useState(null);
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) setCurrentUser(JSON.parse(stored));
+  }, []);
+
+  // stats: if admin show all, otherwise only user's tickets
+  const userTickets = currentUser ? tickets.filter(t => (t.requester === currentUser.email || t.requester === currentUser.username || t.assignee === currentUser.name)) : [];
   const stats = [
-    { title: 'TOTAL TICKETS', value: tickets.length, color: 'from-indigo-500 to-purple-600', icon: 'clipboard' },
-    { title: 'OPEN TICKETS', value: tickets.filter(t => t.status === 'open').length, color: 'from-purple-600 to-blue-600', icon: 'clock' },
-    { title: 'IN PROGRESS', value: tickets.filter(t => t.status === 'in-progress').length, color: 'from-blue-600 to-purple-600', icon: 'zap' },
-    { title: 'RESOLVED', value: tickets.filter(t => t.status === 'resolved').length, color: 'from-purple-500 to-blue-500', icon: 'check' }
+    { title: 'TOTAL TICKETS', value: (currentUser && currentUser.role !== 'admin') ? userTickets.length : tickets.length, color: 'from-indigo-500 to-purple-600', icon: 'clipboard' },
+    { title: 'OPEN TICKETS', value: (currentUser && currentUser.role !== 'admin') ? userTickets.filter(t => t.status === 'open').length : tickets.filter(t => t.status === 'open').length, color: 'from-purple-600 to-blue-600', icon: 'clock' },
+    { title: 'IN PROGRESS', value: (currentUser && currentUser.role !== 'admin') ? userTickets.filter(t => t.status === 'in-progress').length : tickets.filter(t => t.status === 'in-progress').length, color: 'from-blue-600 to-purple-600', icon: 'zap' },
+    { title: 'RESOLVED', value: (currentUser && currentUser.role !== 'admin') ? userTickets.filter(t => t.status === 'resolved').length : tickets.filter(t => t.status === 'resolved').length, color: 'from-purple-500 to-blue-500', icon: 'check' }
   ];
 
   const filteredTickets = tickets.filter(ticket => {
@@ -47,18 +65,41 @@ const DashboardPage = () => {
     e.preventDefault();
     if (!newTicketForm.title.trim() || !newTicketForm.description.trim()) return;
 
-    const newTicket = {
-      id: `TK-${1045 + tickets.length}`,
-      ...newTicketForm,
+    const stored = localStorage.getItem('user');
+    const user = stored ? JSON.parse(stored) : null;
+    const API = 'http://localhost:8082/api';
+    const payload = {
+      category: newTicketForm.category,
+      title: newTicketForm.title,
+      description: newTicketForm.description,
+      priority: newTicketForm.priority,
       status: 'open',
-      time: 'Just now',
-      replies: 0,
-      assignee: 'Mahdi Chaabani'
+      assignee: 'Mahdi Chaabani',
+      requester: user?.email || user?.username || 'anonymous'
     };
-
-    setTickets([newTicket, ...tickets]);
-    setNewTicketForm({ title: '', description: '', category: 'TECHNICAL', priority: 'medium' });
-    setShowCreateTicket(false);
+    fetch(`${API}/tickets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(async r => {
+      if (!r.ok) throw new Error('create failed');
+      const created = await r.json();
+      setTickets(prev => [created, ...prev]);
+      setNewTicketForm({ title: '', description: '', category: 'TECHNICAL', priority: 'medium' });
+      setShowCreateTicket(false);
+    }).catch(() => {
+      const newTicket = {
+        id: `TK-${1045 + tickets.length}`,
+        ...newTicketForm,
+        status: 'open',
+        time: 'Just now',
+        replies: 0,
+        assignee: 'Mahdi Chaabani'
+      };
+      setTickets([newTicket, ...tickets]);
+      setNewTicketForm({ title: '', description: '', category: 'TECHNICAL', priority: 'medium' });
+      setShowCreateTicket(false);
+    });
   };
 
   const renderIcon = (name, className = "w-6 h-6") => {

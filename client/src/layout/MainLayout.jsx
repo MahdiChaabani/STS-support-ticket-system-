@@ -62,17 +62,33 @@ const MainLayout = () => {
     { id: 'dashboard', label: 'Dashboard', icon: 'document' },
     { id: 'tickets', label: 'Tickets', icon: 'ticket' },
     { id: 'profile', label: 'Profile', icon: 'user' },
-    { id: 'messages', label: 'Messages', icon: 'message' },
-    { id: 'docs', label: 'Documentation', icon: 'document' }
+    { id: 'messages', label: 'Messages', icon: 'message' }
   ];
 
+  // get current user to determine base route and display info
+  const [currentUser, setCurrentUser] = useState(null);
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem('user');
+      if (s) setCurrentUser(JSON.parse(s));
+    } catch (e) { /* ignore */ }
+  }, []);
+
   const handleNavClick = (id) => {
+    const base = (currentUser && currentUser.role === 'admin') ? 'admin' : 'user';
     if (id === 'tickets') {
-      navigate('/admin/tickets');
+      navigate(`/${base}/tickets`);
       setActiveNav('tickets');
     } else if (id === 'dashboard') {
-      navigate('/');
+      navigate(`/${base}`);
       setActiveNav('dashboard');
+    } else if (id === 'profile') {
+      navigate(`/${base}/profile`);
+      setActiveNav('profile');
+    } else if (id === 'messages') {
+      // messages not implemented: navigate to tickets for now
+      navigate(`/${base}/tickets`);
+      setActiveNav('messages');
     } else {
       setActiveNav(id);
     }
@@ -89,7 +105,7 @@ const MainLayout = () => {
             </div>
             <div>
               <h2 className={`text-base font-bold tracking-tight leading-tight ${textPrimary}`}>STS - Support Ticket System</h2>
-              <p className={`text-xs font-semibold uppercase tracking-wider mt-1 ${textMuted}`}>Administrator</p>
+              <p className={`text-xs font-semibold uppercase tracking-wider mt-1 ${textMuted}`}>{currentUser?.role ? currentUser.role.toUpperCase() : 'Administrator'}</p>
             </div>
           </div>
         </div>
@@ -122,10 +138,10 @@ const MainLayout = () => {
 
           <div className={`mt-4 p-4 rounded-lg border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-100/50 border-slate-200'}`}>
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">MC</div>
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">{currentUser?.avatar || (currentUser?.name ? currentUser.name.split(' ').map(n=>n[0]).join('') : 'U')}</div>
               <div className="min-w-0">
-                <h4 className={`text-sm font-bold truncate ${textPrimary}`}>Mahdi C.</h4>
-                <p className={`text-xs truncate ${textSecondary}`}>admin@sts.com</p>
+                <h4 className={`text-sm font-bold truncate ${textPrimary}`}>{currentUser?.name || 'User'}</h4>
+                <p className={`text-xs truncate ${textSecondary}`}>{currentUser?.email || '—'}</p>
               </div>
             </div>
             <button className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg border font-medium text-sm ${isDark ? 'border-slate-700 text-slate-300 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400' : 'border-slate-300 text-slate-600 hover:bg-red-100/50 hover:border-red-300 hover:text-red-600'}`}>

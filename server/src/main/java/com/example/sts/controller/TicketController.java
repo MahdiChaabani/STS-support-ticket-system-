@@ -55,6 +55,9 @@ public class TicketController {
         if (ticket.getStatus() == null) ticket.setStatus("open");
         if (ticket.getReplies() == null) ticket.setReplies(0);
         if (ticket.getTime() == null) ticket.setTime("Just now");
+        if (ticket.getRequester() == null || ticket.getRequester().isBlank()) {
+            ticket.setRequester("unknown");
+        }
 
         Ticket saved = repo.save(ticket);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);

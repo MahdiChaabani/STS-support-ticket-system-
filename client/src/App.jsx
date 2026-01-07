@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Landing from "./Pages/Landing";
-import AuthForm from "./Pages/AuthForm";
+import Landing from "./pages/Landing";
+import AuthForm from "./pages/AuthForm";
 import Lenis from "lenis";
 
 import MainLayout from "./layout/MainLayout.jsx";
@@ -44,6 +44,13 @@ return (
 
     {/* Admin dashboard */}
     <Route path="/admin" element={<MainLayout />}>
+      <Route index element={<DashboardPage />} />
+      <Route path="tickets" element={<TicketSection />} />
+      <Route path="profile" element={<ProfileSection />} />
+    </Route>
+
+    {/* User dashboard (same layout, scoped view) */}
+    <Route path="/user" element={<MainLayout />}>
       <Route index element={<DashboardPage />} />
       <Route path="tickets" element={<TicketSection />} />
       <Route path="profile" element={<ProfileSection />} />

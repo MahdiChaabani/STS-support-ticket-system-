@@ -18,6 +18,7 @@ public class Ticket {
     private String time;     // human-readable time string
     private Integer replies;
     private String assignee;
+    private String requester;
 
     public Ticket() {}
 
@@ -31,6 +32,14 @@ public class Ticket {
         this.time = time;
         this.replies = replies;
         this.assignee = assignee;
+    }
+
+    public String getRequester() {
+        return requester;
+    }
+
+    public void setRequester(String requester) {
+        this.requester = requester;
     }
 
     public String getId() {

@@ -60,9 +60,12 @@ export default function AuthForm() {
           setError(data.error || 'Invalid credentials');
           return;
         }
-        // store user and navigate
-        if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/admin');
+        // store user and navigate based on role
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          const role = data.user.role || 'user';
+          navigate(role === 'admin' ? '/admin' : '/user');
+        }
         return;
       } catch (err) {
         setError('Network error');
@@ -98,8 +101,11 @@ export default function AuthForm() {
       });
       if (resp.status === 201) {
         const created = await resp.json();
-        if (created) localStorage.setItem('user', JSON.stringify(created));
-        navigate('/admin');
+        if (created) {
+          localStorage.setItem('user', JSON.stringify(created));
+          const role = created.role || 'user';
+          navigate(role === 'admin' ? '/admin' : '/user');
+        }
         return;
       }
       const body = await resp.json();
