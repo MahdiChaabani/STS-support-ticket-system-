@@ -16,8 +16,8 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/STS-support-ticket-system
-      - SPRING_DATA_MONGODB_DATABASE=STS-support-ticket-system
+      - SPRING_MONGODB_URI=mongodb://mongo:27017/STS-support-ticket-system
+      - SPRING_MONGODB_DATABASE=STS-support-ticket-system
     depends_on:
       - mongo
 

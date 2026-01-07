@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Check, X } from "lucide-react";
 
-// Mock users database
-const MOCK_USERS = [
-  { id: 1, username: 'admin', email: 'admin@sts.com', password: 'password123', role: 'admin' },
-  { id: 2, username: 'user', email: 'user@example.com', password: 'userpass', role: 'user' }
-];
-
 export default function AuthForm() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,16 +49,25 @@ export default function AuthForm() {
         return;
       }
 
-      // simple mock auth: search MOCK_USERS by username or email
-      const user = MOCK_USERS.find(u => u.username === identifier || u.email === identifier);
-      if (!user || user.password !== pwd) {
-        setError('Invalid credentials. Try admin / password123 or user / userpass.');
+      try {
+        const resp = await fetch('http://localhost:8082/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier, password: pwd })
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+          setError(data.error || 'Invalid credentials');
+          return;
+        }
+        // store user and navigate
+        if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+        navigate('/admin');
+        return;
+      } catch (err) {
+        setError('Network error');
         return;
       }
-
-      // on success navigate to dashboard (admin area)
-      navigate('/admin');
-      return;
     }
 
     // Register flow (mock): basic checks
@@ -81,8 +84,29 @@ export default function AuthForm() {
       return;
     }
 
-    // pretend to create a user and navigate to dashboard
-    navigate('/admin');
+    try {
+      const userPayload = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: 'user'
+      };
+      const resp = await fetch('http://localhost:8082/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userPayload)
+      });
+      if (resp.status === 201) {
+        const created = await resp.json();
+        if (created) localStorage.setItem('user', JSON.stringify(created));
+        navigate('/admin');
+        return;
+      }
+      const body = await resp.json();
+      setError(body.error || 'Signup failed');
+    } catch (err) {
+      setError('Network error');
+    }
   };
 
 
