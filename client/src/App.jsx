@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Landing from "./pages/Landing";
 import AuthForm from "./pages/AuthForm";
 import Lenis from "lenis";
@@ -11,27 +11,46 @@ import ProfileSection from "./pages/admin/ProfileSection.jsx";
 
 function App() {
   const lenis = useRef(null);
+  // initialize Lenis only on landing (body-scrolling) routes to avoid hijacking inner scroll areas
+  const location = useLocation();
   useEffect(() => {
-    // Initialize Lenis
+    // if not on root landing, ensure Lenis is destroyed
+    if (location.pathname !== '/') {
+      if (lenis.current) {
+        try { lenis.current.destroy(); } catch (e) {}
+        lenis.current = null;
+      }
+      return;
+    }
+
+    // Initialize Lenis on landing route
     lenis.current = new Lenis({
-      duration: 0.6, // Control the duration of the scroll
-      easing: (t) => 1 - Math.pow(1 - t, 3), // Cubic easing for smooth stop
+      duration: 0.6,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
       smooth: true,
-      smoothTouch: true, // Enable smooth scrolling on touch devices
+      smoothTouch: true,
     });
+    let rafId;
     const animate = (time) => {
-      lenis.current.raf(time);
-      requestAnimationFrame(animate);
+      if (lenis.current) lenis.current.raf(time);
+      rafId = requestAnimationFrame(animate);
     };
-    requestAnimationFrame(animate);
-    // Cleanup on unmount
+    rafId = requestAnimationFrame(animate);
     return () => {
-      lenis.current.destroy();
+      if (lenis.current) {
+        try { lenis.current.destroy(); } catch (e) {}
+        lenis.current = null;
+      }
+      cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [location.pathname]);
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
-    lenis.current.scrollTo(element);
+    if (lenis.current && typeof lenis.current.scrollTo === 'function') {
+      lenis.current.scrollTo(element);
+    } else if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
 return (

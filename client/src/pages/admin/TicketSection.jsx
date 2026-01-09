@@ -283,7 +283,7 @@ const TicketSection = () => {
   ]) : [];
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

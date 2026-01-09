@@ -125,7 +125,7 @@ const DashboardPage = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col flex-1 min-h-0">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className={`text-3xl font-bold mb-2 ${textPrimary}`}>Dashboard</h1>
