@@ -129,7 +129,7 @@ const DashboardPage = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className={`text-3xl font-bold mb-2 ${textPrimary}`}>Dashboard</h1>
-          <p className={`text-sm ${textSecondary}`}>Welcome back, Mahdi 👋</p>
+          <p className={`text-sm ${textSecondary}`}>Welcome back, {currentUser?.name || currentUser?.username || currentUser?.email || 'User'} 👋</p>
         </div>
         <button 
           onClick={() => setShowCreateTicket(true)}

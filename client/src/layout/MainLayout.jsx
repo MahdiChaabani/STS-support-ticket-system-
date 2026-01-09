@@ -250,7 +250,7 @@ const MainLayout = () => {
         </div>
 
         {/* Page Content - PASS THEME TO CHILDREN */}
-        <div className={`flex-1 overflow-y-auto p-8 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
+        <div className={`flex-1 overflow-y-auto p-8 min-h-0 ${isDark ? 'bg-slate-900' : 'bg-white'}`}>
           <Outlet context={{ theme }} />
         </div>
       </div>

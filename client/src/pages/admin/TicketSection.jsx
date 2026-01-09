@@ -11,6 +11,7 @@ const TicketSection = () => {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [tickets, setTickets] = useState([]);
+  const [conversations, setConversations] = useState({});
   const [newTicketForm, setNewTicketForm] = useState({
     title: '',
     description: '',
@@ -25,6 +26,7 @@ const TicketSection = () => {
 
   const fileInputRef = useRef(null);
   const conversationEndRef = useRef(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   // === Mock Data ===
   // no mock data: rely on backend for tickets
@@ -39,15 +41,28 @@ const TicketSection = () => {
     }).then(data => {
       if (!mounted) return;
       if (Array.isArray(data)) {
-        setTickets(data);
-        if (data.length > 0) setSelectedTicket(data[0]);
-        return;
-      }
+          setTickets(data);
+          // initialize conversations map from ticket descriptions
+          const convs = {};
+          data.forEach(t => {
+            convs[t.id] = [
+              { id: `init-${t.id}`, author: t.requester || t.assignee || 'User', role: 'customer', time: t.time || '', message: t.description || '' }
+            ];
+          });
+          setConversations(convs);
+          if (data.length > 0) setSelectedTicket(data[0]);
+          return;
+        }
       setTickets([]);
     }).catch(() => {
       setTickets([]);
     });
     return () => { mounted = false };
+  }, []);
+
+  useEffect(() => {
+    const s = localStorage.getItem('user');
+    if (s) setCurrentUser(JSON.parse(s));
   }, []);
 
   // === Theme Classes ===
@@ -155,12 +170,85 @@ const TicketSection = () => {
     });
   };
 
+  const changeTicketStatus = (newStatus) => {
+    if (!selectedTicket) return;
+    const API = 'http://localhost:8082/api';
+    const payload = {
+      title: selectedTicket.title,
+      description: selectedTicket.description,
+      category: selectedTicket.category,
+      status: newStatus,
+      priority: selectedTicket.priority,
+      assignee: selectedTicket.assignee,
+      replies: selectedTicket.replies || 0,
+      time: selectedTicket.time
+    };
+    // optimistic UI
+    setTickets(prev => prev.map(t => t.id === selectedTicket.id ? { ...t, status: newStatus } : t));
+    setSelectedTicket(prev => prev ? { ...prev, status: newStatus } : prev);
+
+    fetch(`${API}/tickets/${selectedTicket.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(async r => {
+      if (!r.ok) throw new Error('status update failed');
+      const updated = await r.json();
+      setTickets(prev => prev.map(t => t.id === updated.id ? updated : t));
+      setSelectedTicket(updated);
+    }).catch(() => {
+      // keep optimistic state on failure
+    });
+  };
+
   const handleSendReply = () => {
+    if (!selectedTicket) return;
     if (!replyText.trim() && attachedFiles.length === 0) return;
-    console.log('Sending:', { text: replyText, files: attachedFiles });
+    const author = currentUser?.name || currentUser?.username || currentUser?.email || 'Agent';
+    const role = currentUser?.role === 'admin' ? 'agent' : 'customer';
+    const time = new Date().toLocaleString();
+    const msg = { id: `msg-${Date.now()}`, author, role, time, message: replyText || (attachedFiles.length ? 'Attached files' : '') };
+
+    // append to local conversation
+    setConversations(prev => {
+      const prevConv = prev[selectedTicket.id] ? [...prev[selectedTicket.id]] : [];
+      prevConv.push(msg);
+      return { ...prev, [selectedTicket.id]: prevConv };
+    });
+
+    // optimistic UI: clear inputs and scroll
     setReplyText('');
     setAttachedFiles([]);
     conversationEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+    // update reply count on server (PUT)
+    const API = 'http://localhost:8082/api';
+    const updatedReplies = (selectedTicket.replies || 0) + 1;
+    const payload = {
+      title: selectedTicket.title,
+      description: selectedTicket.description,
+      category: selectedTicket.category,
+      status: selectedTicket.status,
+      priority: selectedTicket.priority,
+      assignee: selectedTicket.assignee,
+      replies: updatedReplies,
+      time: selectedTicket.time
+    };
+    fetch(`${API}/tickets/${selectedTicket.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(async r => {
+      if (!r.ok) throw new Error('update failed');
+      const updated = await r.json();
+      // update tickets list and selectedTicket
+      setTickets(prev => prev.map(t => t.id === updated.id ? updated : t));
+      setSelectedTicket(updated);
+    }).catch(() => {
+      // fallback: update local tickets state only
+      setTickets(prev => prev.map(t => t.id === selectedTicket.id ? { ...t, replies: updatedReplies } : t));
+      setSelectedTicket(prev => ({ ...prev, replies: updatedReplies }));
+    });
   };
 
   const handleFileSelect = (e) => {
@@ -189,10 +277,10 @@ const TicketSection = () => {
     setAttachedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Conversation: show ticket description as initial message (no mock replies)
-  const conversation = selectedTicket ? [
-    { id: 1, author: selectedTicket.requester || selectedTicket.assignee || 'User', role: 'customer', time: selectedTicket.time || '', message: selectedTicket.description || '' }
-  ] : [];
+  // Conversation from local map (initialized from ticket description)
+  const conversation = selectedTicket ? (conversations[selectedTicket.id] || [
+    { id: `init-${selectedTicket.id}`, author: selectedTicket.requester || selectedTicket.assignee || 'User', role: 'customer', time: selectedTicket.time || '', message: selectedTicket.description || '' }
+  ]) : [];
 
   return (
     <div className="flex flex-col h-full">
@@ -267,7 +355,12 @@ const TicketSection = () => {
               key={ticket.id} 
               ticket={ticket} 
               isSelected={selectedTicket?.id === ticket.id}
-              onClick={() => setSelectedTicket(ticket)}
+              onClick={() => {
+                setSelectedTicket(ticket);
+                if (!conversations[ticket.id]) {
+                  setConversations(prev => ({ ...prev, [ticket.id]: [ { id: `init-${ticket.id}`, author: ticket.requester || ticket.assignee || 'User', role: 'customer', time: ticket.time || '', message: ticket.description || '' } ] }));
+                }
+              }}
               isDark={isDark}
               getStatusConfig={getStatusConfig}
               getPriorityConfig={getPriorityConfig}
@@ -298,6 +391,16 @@ const TicketSection = () => {
                     </span>
                   </div>
                 </div>
+                {currentUser?.role === 'admin' && (
+                  <div className="mt-3 flex items-center gap-2">
+                    {selectedTicket.status !== 'in-progress' && (
+                      <button onClick={() => changeTicketStatus('in-progress')} className="px-3 py-1 rounded-lg bg-blue-500 text-white text-sm hover:opacity-90">Mark In Progress</button>
+                    )}
+                    {selectedTicket.status !== 'resolved' && (
+                      <button onClick={() => changeTicketStatus('resolved')} className="px-3 py-1 rounded-lg bg-emerald-500 text-white text-sm hover:opacity-90">Resolve</button>
+                    )}
+                  </div>
+                )}
                 <div className="mt-3 flex flex-wrap gap-4 text-sm">
                   <DetailTag icon="user" label={selectedTicket.assignee} isDark={isDark} renderIcon={renderIcon} />
                   <DetailTag icon="ticket" label={selectedTicket.category} isDark={isDark} renderIcon={renderIcon} />
@@ -366,16 +469,16 @@ const TicketSection = () => {
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendReply()}
-                    placeholder="Type a message..."
+                    placeholder={selectedTicket?.status === 'open' ? 'Type a message...' : 'Cannot reply — ticket not open'}
                     className={`flex-1 bg-transparent outline-none text-sm ${textPrimary} placeholder:${textMuted}`}
                   />
                   <button 
                     onClick={handleSendReply}
-                    disabled={!replyText.trim() && attachedFiles.length === 0}
+                    disabled={(selectedTicket?.status !== 'open') || (!replyText.trim() && attachedFiles.length === 0)}
                     className={`p-1.5 rounded-lg transition-colors ${
-                      replyText.trim() || attachedFiles.length > 0
-                        ? 'text-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-500/20'
-                        : 'text-gray-400 cursor-not-allowed'
+                      (selectedTicket?.status !== 'open') || (!replyText.trim() && attachedFiles.length === 0)
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'text-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-500/20'
                     }`}
                   >
                     {renderIcon('send', 'w-4 h-4')}
