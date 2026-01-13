@@ -23,7 +23,7 @@ export default function Landing() {
             : 'bg-white shadow-md'
         }`}
       >
-        <h1 className="text-lg font-bold text-purple-700">Title</h1>
+        <h1 className="text-lg font-bold text-purple-700">STS</h1>
         <div className="space-x-5">
           <Link to="/Login">
           <button className="px-4 py-2 text-sm text-white bg-purple-600 rounded hover:bg-purple-700">
@@ -42,12 +42,11 @@ export default function Landing() {
       {/* Hero Section */}
       <main className="flex flex-col items-center justify-center flex-1 text-center px-4 mt-40">
         <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-400 text-transparent bg-clip-text">
-          Placeholder main text
+          STS Support Ticket System
         </h2>
         <p className="text-l mb-8 text-purple-800 max-w-xl">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Adipisci dolor
-          ut laboriosam optio excepturi ipsa vitae, nam unde porro voluptatem accusamus
-          reprehenderit, quod magnam esse officiis. Esse eaque accusamus aspernatur.
+          Elevate your customer support with a simple, modern ticketing system that centralizes requests, automates routing,
+           and helps teams resolve issues faster no training required.
         </p>
         <Link to="/Register">
         <button className="px-4 py-2 bg-purple-600 text-white text-lg rounded hover:bg-purple-700">
@@ -62,11 +61,10 @@ export default function Landing() {
             <div className="bg-gray-50 p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
               <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg mb-4">
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-900">Placeholder</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">Centralized Ticketing</h3>
               <p className="text-gray-600 text-sm">
-                Lorem, ipsum dolor sit amet consectetur 
-                adipisicing elit. Aut pariatur, mollitia officiis facere, minus
-                maxime earum sunt excepturi atque culpa a at ullam id quaerat sapiente modi repudiandae ab? Optio.
+                Collect requests from email, web forms, and chat into a single,
+                 searchable queue so teams can prioritize work and avoid duplicated effort.
               </p>
             </div>
 
@@ -74,10 +72,10 @@ export default function Landing() {
             <div className="bg-gray-50 p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
               <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-cyan-600 rounded-lg mb-4">
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-900">Placeholder</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">Real-Time Collaboration</h3>
               <p className="text-gray-600 text-sm">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quam, explicabo laborum praesentium aliquam eum consequuntur dolorem 
-                adipisci quis porro unde quas vero aperiam earum sit, voluptas, a exercitationem incidunt labore.
+                Internal notes, mentions, and live updates let agents collaborate on 
+                tickets without leaving the platform faster handoffs, clearer context.
               </p>
             </div>
 
@@ -85,7 +83,7 @@ export default function Landing() {
             <div className="bg-gray-50 p-6 rounded-2xl shadow-sm border hover:shadow-md transition">
               <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-green-600 rounded-lg mb-4">
               </div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-900">Placeholder</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-900">Analytics & Insights</h3>
               <p className="text-gray-600 text-sm">
                 Lorem ipsum dolor sit, amet consectetur adipisicing elit. 
                 Perferendis nemo unde nobis iste placeat odio voluptatibus 
